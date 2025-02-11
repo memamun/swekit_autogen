@@ -38,13 +38,21 @@ captain = CaptainAgent(
     """
 )
 
-# Define user proxy agent
+# Define interactive user proxy agent
 user_proxy = UserProxyAgent(
     name="user_proxy",
-    human_input_mode="NEVER",
+    human_input_mode="ALWAYS",  # Changed to ALWAYS to enable user input
     max_consecutive_auto_reply=10,
     is_termination_msg=lambda x: x is not None and isinstance(x.get("content"), str) and "TERMINATE" in x.get("content", ""),
     code_execution_config={"use_docker": False},
+    system_message="""You are a user proxy that helps interact with the CaptainAgent.
+    You can:
+    1. Execute code provided by the CaptainAgent
+    2. Provide feedback and additional instructions
+    3. Help guide the conversation towards solving the task
+    
+    When you receive input from the human user, pass it along to the CaptainAgent.
+    """
 )
 
 # Register tools
