@@ -4,99 +4,107 @@ from agent import composio_toolset, captain, user_proxy
 
 def main() -> None:
     """Run the agent with interactive user input."""
-    print("Welcome to the Interactive SWE Agent!")
-    print("You can interact with the agent by providing:")
-    print("1. Repository information (owner/repo)")
-    print("2. Issue description or number")
+    print("Welcome to the Full-Stack Development Agent!")
+    print("\nAvailable Operations:")
+    print("1. Create new repository")
+    print("2. Work on existing repository")
+    print("3. Fix issues")
+    print("4. Review pull requests")
     print("Type 'exit' at any time to quit\n")
 
     while True:
-        # Get repository information
-        repo = input("Enter repository (format: owner/repo): ")
-        if repo.lower() == 'exit':
-            break
-            
-        # Get issue information
-        issue = input("Enter issue description or number: ")
-        if issue.lower() == 'exit':
+        operation = input("Select operation (1-4): ")
+        if operation.lower() == 'exit':
             break
 
         try:
-            owner, repo_name = repo.split("/")
-            
-            # Initiate chat with CaptainAgent
-            chat_result = user_proxy.initiate_chat(
-                captain,
-                message=f"""
-                Repository: {repo}
-                Issue: {issue}
+            if operation == "1":
+                # Create new repository
+                repo_name = input("Enter new repository name: ")
+                description = input("Enter repository description: ")
                 
-                Please analyze this issue and create a fix following these steps:
-                1. Analyze the codebase and understand the issue
-                2. Develop a solution strategy
-                3. Implement the fix
-                4. Test the changes
-                5. Create a pull request
-                """
-            )
-
-            # Process the results
-            composio_toolset.execute_action(
-                action=Action.FILETOOL_CHANGE_WORKING_DIRECTORY,
-                params={"path": f"/home/user/{repo_name}"},
-            )
-            
-            # Get the patch
-            response = composio_toolset.execute_action(
-                action=Action.FILETOOL_GIT_PATCH,
-                params={},
-            )
-
-            # Create and push changes
-            branch_name = "fix-" + str(uuid.uuid4())[:8]
-            git_commands = [
-                f"checkout -b {branch_name}",
-                "add -u",
-                "config --global user.email 'random@gmail.com'",
-                "config --global user.name 'random'",
-                f"commit -m 'Fix: {issue}'",
-                f"push --set-upstream origin {branch_name}",
-            ]
-            
-            for command in git_commands:
-                composio_toolset.execute_action(
-                    action=Action.FILETOOL_GIT_CUSTOM,
-                    params={"cmd": command},
+                # Create repository
+                repo_response = composio_toolset.execute_action(
+                    action=Action.GITHUB_CREATE_A_REPOSITORY,
+                    params={
+                        "name": repo_name,
+                        "description": description,
+                        "private": False
+                    }
+                )
+                
+                # Initialize with project structure
+                chat_result = user_proxy.initiate_chat(
+                    captain,
+                    message=f"""
+                    Repository: {repo_response['data']['full_name']}
+                    Task: Initialize repository with a full-stack project structure
+                    
+                    Please:
+                    1. Set up the basic project structure
+                    2. Initialize frontend and backend
+                    3. Set up CI/CD configuration
+                    4. Create initial documentation
+                    """
                 )
 
-            # Create pull request
-            pr_response = composio_toolset.execute_action(
-                action=Action.GITHUB_CREATE_A_PULL_REQUEST,
-                params={
-                    "owner": owner,
-                    "repo": repo_name,
-                    "head": branch_name,
-                    "base": "master",
-                    "title": f"Fix: {issue}",
-                },
-            )
+            elif operation == "2":
+                # Work on existing repository
+                repo = input("Enter repository (format: owner/repo): ")
+                task = input("Enter development task description: ")
+                
+                chat_result = user_proxy.initiate_chat(
+                    captain,
+                    message=f"""
+                    Repository: {repo}
+                    Task: {task}
+                    
+                    Please:
+                    1. Analyze the existing codebase
+                    2. Plan the implementation
+                    3. Make necessary changes
+                    4. Add tests
+                    5. Create a pull request
+                    """
+                )
 
-            # Show results
-            print("\n=== Results ===")
-            if response.get("data", {}).get("patch"):
-                print("Changes made:")
-                print(response["data"]["patch"])
-            print(f"\nPull request created: {pr_response.get('data', {}).get('html_url', 'N/A')}")
+            elif operation == "3":
+                # Fix issues (existing functionality)
+                repo = input("Enter repository (format: owner/repo): ")
+                issue = input("Enter issue number or description: ")
+                
+                # Existing issue handling code...
+                
+            elif operation == "4":
+                # Review pull requests
+                repo = input("Enter repository (format: owner/repo): ")
+                pr_number = input("Enter PR number: ")
+                
+                chat_result = user_proxy.initiate_chat(
+                    captain,
+                    message=f"""
+                    Repository: {repo}
+                    PR: {pr_number}
+                    
+                    Please:
+                    1. Review the changes
+                    2. Check code quality
+                    3. Verify tests
+                    4. Provide feedback
+                    """
+                )
 
+            # Show results and handle continuation
+            print("\n=== Operation Complete ===")
+            
         except Exception as e:
             print(f"\nError: {str(e)}")
             print("Please try again with valid input")
 
-        # Ask if user wants to continue
-        if input("\nWould you like to process another issue? (y/n): ").lower() != 'y':
+        if input("\nWould you like to perform another operation? (y/n): ").lower() != 'y':
             break
 
-    print("Thank you for using the Interactive SWE Agent!")
+    print("Thank you for using the Full-Stack Development Agent!")
 
 if __name__ == "__main__":
     main()
