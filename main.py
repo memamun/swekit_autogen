@@ -1,17 +1,29 @@
 from inputs import from_github
 from composio import Action
 import uuid
-from agent import composio_toolset, assistant, user_proxy
+from agent import composio_toolset, captain, user_proxy
 
 def main() -> None:
     """Run the agent."""
     repo, issue = from_github()
     owner, repo_name = repo.split("/")
-    # Initiate the chat
-    user_proxy.initiate_chat(
-        assistant,
-        message=f"Solve the following issue in the repository {repo}: {issue}"
+    
+    # Initiate the chat with CaptainAgent
+    chat_result = user_proxy.initiate_chat(
+        captain,
+        message=f"""
+        Repository: {repo}
+        Issue: {issue}
+        
+        Please analyze this issue and create a fix following these steps:
+        1. Analyze the codebase and understand the issue
+        2. Develop a solution strategy
+        3. Implement the fix
+        4. Test the changes
+        5. Create a pull request
+        """
     )
+
     composio_toolset.execute_action(
         action=Action.FILETOOL_CHANGE_WORKING_DIRECTORY,
         params={"path": f"/home/user/{repo_name}"},

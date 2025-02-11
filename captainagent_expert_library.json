@@ -1,0 +1,12 @@
+{
+  "SWE_Expert": {
+    "name": "SWE_Expert",
+    "description": "Software engineering expert specializing in code analysis and bug fixing",
+    "instructions": "Analyze code, identify bugs, and implement fixes following best practices"
+  },
+  "Test_Expert": {
+    "name": "Test_Expert",
+    "description": "Testing specialist focusing on bug reproduction and verification",
+    "instructions": "Create test cases, reproduce bugs, and verify fixes"
+  }
+}
