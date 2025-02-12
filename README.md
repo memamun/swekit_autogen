@@ -64,11 +64,11 @@ GITHUB_ACCESS_TOKEN=your_github_access_token
 python main.py
 ```
 
-# With Docker and Without Docker:
+## With Docker and Without Docker:
 - Change Workspace WorkspaceType.Host for Local Workspace(preferred)
 - Change Workspace WorkspaceType.Docker for Docker Workspace
 
-# TODO:
+## TODO:
 - Add integration with AutogenStudio
 - Add integration with Ollama
 - Add integration with Gemini
