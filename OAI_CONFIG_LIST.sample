@@ -1,0 +1,19 @@
+[
+    {
+        "model": "gpt-4o",
+        "api_key": "your-api-key",
+        "tags": ["gpt-4o", "tool", "vision"]
+    },
+    {
+        "model": "claude-3-5-sonnet-20241022",
+        "api_key": "your-api-key",
+        "tags": ["claude", "tool", "vision"]
+    },
+    {
+        "model": "<your Azure OpenAI deployment name>",
+        "api_key": "<your Azure OpenAI API key here>",
+        "base_url": "<your Azure OpenAI API base here>",
+        "api_type": "azure",
+        "api_version": "<your Azure OpenAI API version here>"
+    }
+]
